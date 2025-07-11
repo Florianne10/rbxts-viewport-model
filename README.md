@@ -146,6 +146,8 @@ The second example is to calculate a camera cframe that best fits the model give
 
 However, it’s important to note that this calculation is based off of the model’s point cloud meaning meshes, csg, and/or any other base part that makes it difficult to get a proper point cloud may cause this calculation to seem inaccurate.
 
+<video controls src="https://devforum-uploads.s3.dualstack.us-east-2.amazonaws.com/uploads/original/4X/0/f/4/0f4ca95314f0ec89868587ebb94eb7e4914eb131.mp4" title="Title"></video>
+
 ```typescript
 // Setup viewport frame and camera
 const viewportFrame = PATH_TO_VIEWPORT_FRAME;
