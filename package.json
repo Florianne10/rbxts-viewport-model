@@ -1,0 +1,35 @@
+{
+	"name": "@rbxts/viewport-model",
+	"version": "1.0.0",
+	"main": "out/init.lua",
+	"scripts": {
+		"build": "rbxtsc",
+		"watch": "rbxtsc -w",
+		"prepublishOnly": "npm run build"
+	},
+	"keywords": [],
+	"author": "Florianne10",
+	"license": "MIT",
+	"description": "Type script version of the EgoMoose module \"ViewportModel.lua\". It's a module calculating the camera position to fit a model in the viewport frame.",
+	"types": "out/index.d.ts",
+	"files": [
+		"out",
+		"!**/*.tsbuildinfo"
+	],
+	"publishConfig": {
+		"access": "public"
+	},
+	"devDependencies": {
+		"@rbxts/compiler-types": "^3.0.0-types.0",
+		"@rbxts/types": "^1.0.861",
+		"@typescript-eslint/eslint-plugin": "^8.36.0",
+		"@typescript-eslint/parser": "^8.36.0",
+		"eslint": "^8.57.1",
+		"eslint-config-prettier": "^10.1.5",
+		"eslint-plugin-prettier": "^5.5.1",
+		"eslint-plugin-roblox-ts": "^0.0.36",
+		"prettier": "^3.6.2",
+		"roblox-ts": "^3.0.0",
+		"typescript": "^5.8.3"
+	}
+}
