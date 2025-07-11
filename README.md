@@ -2,9 +2,9 @@
 
 `ViewportModel.ts` is a TypeScript version of the EgoMoose module `ViewportModel.lua`. It calculates the camera position to fit a model in the viewport frame.
 
-The original Lua module can be found here: [EgoMoose/ViewportModel.lua](https://gist.github.com/EgoMoose/2fd62ee98754380f6d839267ffe4f588)
+The original Lua module can be found here: [Github: EgoMoose/ViewportModel.lua](https://gist.github.com/EgoMoose/2fd62ee98754380f6d839267ffe4f588)
 
-You can also find the Roblox Devforum post here: [ViewportFrame Model Fitter](https://devforum.roblox.com/t/viewportframe-model-fitter/1345611/)
+You can also find the Roblox Devforum post here: [Devforum: ViewportFrame Model Fitter](https://devforum.roblox.com/t/viewportframe-model-fitter/1345611/)
 
 ## Quick Start
 
@@ -109,3 +109,62 @@ getMinimumFitCFrame(orientation: CFrame): CFrame;
 - `orientation`: The orientation to use for the camera. This should be a `CFrame` representing the desired orientation of the camera.
 
 ## Examples
+
+### Fixed Minimum Distance with rotating camera
+
+The first example is to calculate a fixed minimum distance that’s guaranteed to contain the model regardless of the camera orientation or viewport size.
+
+<video controls src="https://devforum-uploads.s3.dualstack.us-east-2.amazonaws.com/uploads/original/4X/c/6/a/c6a59ca97bd77cebfd30ace5639911527cb37e04.mp4" title="Title"></video>
+
+```typescript
+// Setup viewport frame and camera
+const viewportFrame = PATH_TO_VIEWPORT_FRAME;
+const camera = new Instance("Camera");
+viewportFrame.CurrentCamera = camera;
+
+const inst = MODEL_TEMPLATE:Clone();
+inst.Parent = viewportFrame;
+
+// Setup the ViewportModel
+const viewportModel = new ViewportModel(viewportFrame, camera);
+viewportModel.setModel(inst);
+
+
+
+// Make the camera rotating while fitting the model
+const distance = viewportModel.getFitDistance();
+
+RunService.RenderStepped:Connect(() => {
+    // Update the camera CFrame
+    camera.CFrame = cf.mul(CFrame.fromEulerAnglesYXZ(math.rad(-20), math.rad(tick() * 20) % (math.pi * 2), 0).mul(CFrame.new(0, 0, distance)));
+});
+```
+
+### Minimum Fit in every Orientation while camera is rotating
+
+The second example is to calculate a camera cframe that best fits the model given an orientation. This will mean that the model will always be touching at least one edge of the viewport frame.
+
+However, it’s important to note that this calculation is based off of the model’s point cloud meaning meshes, csg, and/or any other base part that makes it difficult to get a proper point cloud may cause this calculation to seem inaccurate.
+
+```typescript
+// Setup viewport frame and camera
+const viewportFrame = PATH_TO_VIEWPORT_FRAME;
+const camera = new Instance("Camera");
+viewportFrame.CurrentCamera = camera;
+
+const inst = MODEL_TEMPLATE:Clone();
+inst.Parent = viewportFrame;
+
+// Setup the ViewportModel
+const viewportModel = new ViewportModel(viewportFrame, camera);
+viewportModel.setModel(inst);
+
+
+
+// Make the camera rotating while fitting the model
+RunService.RenderStepped:Connect(() => {
+    const orientation = CFrame.fromEulerAnglesYXZ(math.rad(-20), math.rad(tick() * 20) % (math.pi * 2), 0);
+    const cf = viewportModel.getMinimumFitCFrame(orientation);
+    camera.CFrame = cf
+});
+```
