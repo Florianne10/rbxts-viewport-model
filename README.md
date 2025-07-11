@@ -1,11 +1,111 @@
-# Hi there!
+# ViewportModel.ts
+
+`ViewportModel.ts` is a TypeScript version of the EgoMoose module `ViewportModel.lua`. It calculates the camera position to fit a model in the viewport frame.
+
+The original Lua module can be found here: [EgoMoose/ViewportModel.lua](https://gist.github.com/EgoMoose/2fd62ee98754380f6d839267ffe4f588)
+
+You can also find the Roblox Devforum post here: [ViewportFrame Model Fitter](https://devforum.roblox.com/t/viewportframe-model-fitter/1345611/)
+
+## Quick Start
+
+### Install
+
+To install the module, you can use npm:
+
+```bash
+npm i @rbxts/viewportmodel
+```
+
+### Usage
+
+```typescript
+// Setup viewport frame and camera
+const viewportFrame = PATH_TO_VIEWPORT_FRAME;
+const camera = new Instance("Camera");
+viewportFrame.CurrentCamera = camera;
+
+const inst = MODEL_TEMPLATE:Clone();
+inst.Parent = viewportFrame;
+
+// Setup the ViewportModel
+const viewportModel = new ViewportModel(viewportFrame, camera);
+viewportModel.setModel(inst);
 
 
+// Make the camera fit the model with the desired orientation
+const angle = CFrame.fromEulerAnglesYXZ(-math.pi * 0.05, -math.pi * 0.2, 0);
+const cf = viewportModel.getMinimumFitCFrame(angle);
 
+camera.CFrame = cf;
+```
 
+## Documentation
 
-# Quick Start
+### Constructor
 
+Create a new `ViewportModel` instance using the constructor:
 
+```typescript
+new (vpf: ViewportFrame, camera: Camera): ViewportModel;
+```
 
-# Documentation
+**Parameters:**
+
+- `vpf`: The `ViewportFrame` to use for rendering the model.
+- `camera`: The `Camera` to use for rendering the model. This camera should be set to the `ViewportFrame` `CurrentCamera` property.
+
+### Methods
+
+#### setModel
+
+Used to set the model that is being focused on. Should be used for new models and/or a change in the current model.
+
+> e.g. parts added/removed from the model or the model cframe changed
+
+```typescript
+setModel(model: Model): void;
+```
+
+**Parameters:**
+
+- `model`: The `Model` to set. This should be the model that you want to fit in the viewport frame.
+
+#### calibrate
+
+Should be called when something about the viewport frame / camera changes
+
+> e.g. the frame size or the camera field of view
+
+```typescript
+calibrate(): void;
+```
+
+#### getFitDistance
+
+Returns a fixed distance that is guaranteed to encapsulate the full model
+This is useful for when you want to rotate freely around an object w/o expensive calculations
+Focus position can be used to set the origin of where the camera's looking
+Otherwise the model's center is assumed
+
+```typescript
+getFitDistance(focusPosition?: Vector3): number;
+```
+
+**Parameters:**
+
+- `focusPosition`: Optional. The position to focus on. If not provided, the model's center will be used.
+
+#### getMinimumFitCFrame
+
+Returns the optimal camera cframe that would be needed to best fit the model in the viewport frame at the given orientation.
+Keep in mind this functions best when the model's point-cloud is correct as such models that rely heavily on meshes, csg, etc will only return an accurate result as their point cloud
+
+```typescript
+getMinimumFitCFrame(orientation: CFrame): CFrame;
+```
+
+**Parameters:**
+
+- `orientation`: The orientation to use for the camera. This should be a `CFrame` representing the desired orientation of the camera.
+
+## Examples
